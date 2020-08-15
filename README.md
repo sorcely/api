@@ -29,17 +29,17 @@ This basically does the same, but it assumes Python, git and so on hasn't been i
 | **In total**  | **20-30s**   | **1.2s**       |
 
 # 🎯 Goals for v1.0 release (before september)
-* Improve lookup speed
-  ❌Use GPUs for the AI (speed increase up to 120x)
-  ✅Use threading in the webcrawler and translation
-  ✅Use batch prediction (did not improve that much)
-* Improve answer-engine (nlp library)
-  ✅Add Electra QA model
-  ✅Add answer score
-* Improve data-engine (crawler lirary)
-  ❌Improve the website filter (ongoing process)
-  ❌Add specific websites like snopes.com, factcheck.org
-  ✅Add the News API
+* Improve lookup speed  
+  ❌Use GPUs for the AI (speed increase up to 120x)  
+  ✅Use threading in the webcrawler and translation  
+  ✅Use batch prediction (did not improve that much)  
+* Improve answer-engine (nlp library)  
+  ✅Add Electra QA model  
+  ✅Add answer score  
+* Improve data-engine (crawler lirary)  
+  ❌Improve the website filter (ongoing process)  
+  ❌Add specific websites like snopes.com, factcheck.org  
+  ✅Add the News API  
 
 # 🔧 Creating a new feature
 **Requirements when creating a new feature**
@@ -56,13 +56,20 @@ Where module could be *answer-engine*, *data-engine*, *run* or *server*
 3. Document the results on the testset
 
 # 🧪 Testing
+You can either choose to run all tests at once, a smaller test on just the run function or run a specific tests for a module like answer-engine or data-engine.
+
+#### Tests you can run
+* tests/test.py
+* tests/test_run.py
+* tests/test_server.py
+* tests/test_answer_engine.py
+* tests/test_data_engine.py
+
+We're then checking if the output formata and dtypes is correct. And also just checks if it compiles.  
+Maybe add more specialized assertions. But we don't believe it's needed yet.
 
 # 📧 Contact
 If you need help, please open an issue or send an email.
 
 ### Emails 
 * [Marius, founder](mailto:marius.schlichtkrull@gmail.com)
-
-# 🎵 Music
-[Hip Hop DJ](https://www.reddit.com/rpan/r/RedditSessions/gwpm06?related=home)
-[Nightcore playlist]()
