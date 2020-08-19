@@ -64,11 +64,10 @@ class fakenews:
         # Initialize the google object
         self.translator = googletrans.Translator()
 
-        # Initialize crawler objects
-        self.search_engine = data_engine.search_engine(name=search_engine)
-        self.webcrawler = data_engine.webcrawler # Scrapes a generel website for p-tags
+        # Initialize the data engine module
+        # ...
 
-        # Initalize the answer_engine modules
+        # Initalize the answer_engine module
         self.pipeline = answer_engine.pipeline(
             model_names={
                 'qa': 'ktrapeznikov/albert-xlarge-v2-squad-v2',
@@ -76,47 +75,9 @@ class fakenews:
             use_custom_pipeline=False, 
             from_google_bucket=False)
 
-    def check(self, query:str, check_news:bool=False):
+    def check(self):
         # n_word: the max amount of words the webcrawler outputs
         n_words = 256
-
-        # The process each thread are running to get data
-        def get_data(inputs:tuple):
-            link = inputs[0]
-            query = inputs[1]
-            n_words = inputs[2]
-            data = data_engine.webcrawler(link, query, n_words)
-            if data != None:
-                data = self.translator.translate(data, dest='en').text
-            return data
-
-        # Clean question so we avoid weird chars that ALBERT don't understand
-        query = remove_bad_chars(query)
-
-        # Gathers links
-        if check_news:
-            # Gets links from a news api search
-            links = data_engine.news_api.get_links(query)
-
-        # Either gets links from specified search engine
-        links = self.search_engine.search(query, n_links=self.threads)
-        links = links[:self.threads]
-
-        # Gather data with the webcrawler using a threading mechanism for speed increase
-        processes = []
-
-        # Creates the threads that out function is going to run on
-        for i in links:
-            t = ThreadWithReturnValue(target=get_data, args=[(i, query, n_words)])
-            t.start()
-            processes.append(t)
-
-        # This saves the data when done running
-        data = []
-        for i in processes:
-            i_result = i.join()
-            if i_result != None:
-                data.append(i_result)
 
         if len(data) > 0:
             # Translates the query into plain english
