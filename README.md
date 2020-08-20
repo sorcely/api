@@ -37,7 +37,6 @@ This basically does the same, but it assumes Python, git and so on hasn't been i
   ✅Add Electra QA model  
   ✅Add answer score  
 * Improve data-engine (crawler lirary)  
-  ❌Improve the website filter (ongoing process)  
   ❌Add specific websites like snopes.com, factcheck.org  
   ✅Add the News API  
 

@@ -11,6 +11,8 @@ import requests
 import json
 from typing import Iterable, Callable
 
+BUFFER = 5
+
 # Search object for gathering links to further analysis
 # It uses class arc
 class Search:
@@ -28,9 +30,6 @@ class Search:
                 different question than the search querybut as standard it is the question
             n_links (:obj: 'int')
                * The maximum amount of links that is returned
-               * These links should be crawlable, because they've gone through a filter
-               * I'm maybe considering getting the data right after the search query. 
-                This way we can skip the filter part and just directly get the page data
             search_method (:obj: 'str')
                * It's the type of search engine we want to use. Maybe Google, NewsAPI or another one
                * This can be effective if Google are IP banning you/us. But also if we want 
@@ -50,33 +49,8 @@ class Search:
         else:
             results = search_engine(query=query)
 
-        # Remove blacklisted websites
-        results = self.filter_urls(results)
-
         # Take max n_links
-        return results[:n_links]
-
-    def filter_urls(self, urls:Iterable) -> Callable:
-        '''
-        urls (:obj: 'Iterable')
-        '''
-
-        # List of urls we want to get rid of
-        invalid_urls = ['.xls', '.txt', 'youtube.com', 'youtu.be']
-
-        # We're turning the urls into a string so it's easier to look it up
-        str_urls = ' '.join(urls)
-
-        # We haven't created the filter yet, so we're just returning the
-        for i in non_valid:
-            # Adds a filter so we don't 
-            # always have to iterate over urls
-            if i in str_urls:
-                for j in urls:
-                    if i in j:
-                        urls.remove(j)
-
-        return urls
+        return results[:n_links+BUFFER]
 
     def create_search_fn(self, method:str) -> Callable:
         '''
