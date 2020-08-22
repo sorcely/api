@@ -32,7 +32,7 @@ def Webcrawler(urls:Iterable, question:str, n_results:int, n_words:int) -> Itera
            * The maximum amount of words returned from each url
            * The lower, the faster our ml-models will be.
     '''
-        
+
     def MultiThreadProcess(inputs:dict) -> str:
         '''
         The process that is spawned in the specified amount of threads
@@ -46,11 +46,11 @@ def Webcrawler(urls:Iterable, question:str, n_results:int, n_words:int) -> Itera
                * url contains the textual data that we want to extract
                * question is the question asked by the user, and is used to find the most probable sentences
                * n_words is maximum amount of words returned by this function
-              
         '''
+
         url = inputs['url']
         question = inputs['question']
-        n_words = ['n_words']
+        n_words = inputs['n_words']
 
         # Run the crawling function
         text = Crawl(url)
@@ -60,7 +60,6 @@ def Webcrawler(urls:Iterable, question:str, n_results:int, n_words:int) -> Itera
 
         # Shrink down the text so that the ml part is faster
         # text = wordrank.BM25Okapi(text, question, n_words)
-        print(text.split(' '))
         text = ' '.join(text.split(' ')[:n_words])
 
         return text
