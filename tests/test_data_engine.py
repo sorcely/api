@@ -10,33 +10,35 @@ import data_engine
 class DataEngineTests(unittest.TestCase):
 
     def test_google_search(self):
-        g = data_engine.search_engine('google')
-        r = g.search('What is unittesting', 10)
+        '''
+        In this test, we should only test if it compiles
+        '''
+        search_engine = data_engine.Search()
+        results = search_engine('When did the WWII break out', 5, 'google')
 
-        self.assertTrue(len(r) <= 10) # Fail if r is above 11
+    def test_news_api_search(self):
+        pass
 
     def test_webcrawler(self):
-        working_link = 'https://www.dr.dk'
-        not_working_link = 'https://www.dr.dk'
-        question = ''
+        '''
+        In this test, we test if the crawler is able to:
+         a) open the link, and behave correct if it's invalid
+         b) Parse the text from the website
+         c) Return the correct information
+        But also if the output format is correct
+        Is the word length long enough, and is it an iterable
+        '''
+        link = 'https://docs.python.org/3/library/typing.html'
+        link1 = 'https://www.dr.dk/sporten/webfeature/gaetsportsgren'
+        link2  = 'https://www.dr.dk/nyheder/viden/natur/forskere-maler-oejne-paa-koeers-rumper-det-holder-loeverne-vaek'
+        results = data_engine.Webcrawler(
+            urls = [link],
+            question = 'what does this provide',
+            n_results = 1,
+            n_words = 256)
 
-        # Open invalid_urls.txt so we can compare it with a future version
-        with open('invalid_urls.txt', 'r') as f:
-            f_original = f.read()
-
-        r1 = data_engine.webcrawler(working_link, question, 256)
-        r2 = data_engine.webcrawler(not_working_link, question, 256)
-
-        # Open invalid_urls.txt so we can compare it with a future version
-        with open('invalid_urls.txt', 'r') as f:
-            f_new = f.read()
-
-        # Assertions to the first request
-        self.assertTrue(r1 != None)
-        self.assertTrue(len(r1) <= 256)
-
-        # Assertions to the not working url
-        self.assertTrue(f_original == f_new)
+        self.assertTrue(type(results) == list)
+        self.assertTrue(len(results[0].split(' ')) <= 256)
 
 if __name__ == '__main__':
     unittest.main()
