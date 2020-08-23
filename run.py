@@ -10,44 +10,7 @@ import concurrent.futures
 import threading
 from threading import Thread
 
-class ThreadWithReturnValue(Thread):
-    def __init__(self, group=None, target=None, name=None, args=(), kwargs={}, Verbose=None):
-        Thread.__init__(self, group, target, name, args, kwargs)
-        self._return = None
-
-    def run(self):
-        if self._target is not None:
-            self._return = self._target(*self._args, **self._kwargs)
-
-    def join(self, *args):
-        Thread.join(self, *args)
-        return self._return
-
-def remove_bad_chars(x):
-    # Where x is a string
-    # remove_bad_chars is used to replce weird unseen character with the closest character
-    bad_chars = {
-        '¢': 'c', '¥': 'Y', 'Á': 'A', 'Â': 'A', 'É': 'E', 'Î': 'I', 'Ó': 'O', 'Ô': 'O', 'Õ': 'O', 'Ö': 'O', '×': 'x', 'Ú': 'U', 
-        'Ü': 'U', 'ß': 'ss', 'à': 'a', 'á': 'a', 'â': 'a', 'ã': 'a', 'ä': 'a', 'ç': 'c', 'è': 'e', 'é': 'e', 'ê': 'e', 'ë': 'e', 
-        'ì': 'i', 'í': 'i', 'î': 'i', 'ï': 'i', 'ð': 'o', 'ñ': 'n', 'ò': 'o', 'ó': 'o', 'ô': 'o', 'õ': 'o', 'ö': 'o', 'ù': 'u', 
-        'ú': 'u', 'û': 'u', 'ü': 'u', 'ý': 'y', 'ÿ': 'y', 'Ā': 'A', 'ā': 'a', 'ă': 'a', 'ć': 'c', 'č': 'c', 'Đ': 'D', 'đ': 'd', 
-        'Ē': 'E', 'ē': 'e', 'ė': 'e', 'ę': 'e', 'ě': 'e', 'ğ': 'g', 'ħ': 'h', 'ī': 'i', 'İ': 'I', 'ı': 'l', 'ļ': 'l', 'Ł': 'L', 
-        'ł': 'l', 'ń': 'n', 'ņ': 'n', 'ŋ': 'n', 'Ō': 'O', 'ō': 'o', 'ő': 'o', 'œ': 'æ', 'ś': 's', 'Ş': 'S', 'ş': 's', 'Š': 'S', 
-        'š': 's', 'ũ': 'u', 'ū': 'u', 'ů': 'u', 'ŵ': 'w', 'Ż': 'Z', 'ż': 'z', 'Ž': 'Z', 'ž': 'z', 'ư': 'u', 'ǎ': 'a', 'ǐ': 'i', 
-        'ǒ': 'o', 'ǔ': 'u', 'ș': 's', 'ț': 't', 'ɐ': 'a', 'ɑ': 'a', 'ɒ': 'a', 'ɔ': 'c', 'ə': 'e', 'ɛ': '3', 'ɜ': '3', 'ɡ': 'g', 
-        'ɣ': 'Y', 'ɫ': 'l', 'ɭ': 'l', 'ɯ': 'w', 'ɳ': 'n', 'ɸ': 'ø', 'ɹ': 'j', 'ʂ': 's', 'ʏ': 'y', 'ʒ': '3', 'ʰ': 'h', 'Ε': 'E', 
-        'Η': 'H', 'Θ': 'O', 'Ι': 'I', 'Κ': 'K', 'Λ': 'A', 'Μ': 'M', 'Ν': 'N', 'ί': 'i', 'α': 'a', 'β': 'B', 'γ': 'Y', 'η': 'n', 
-        'θ': '0', 'ν': 'v', 'ώ': 'w', 'З': '3', 'И': 'N', 'К': 'K', 'Н': 'H', 'П': 'n', 'С': 'C', 'Т': 'T', 'а': 'a', 'б': '6', 
-        'в': 'B', 'д': 'A', 'е': 'e', 'з': '3', 'и': 'n', 'й': 'n', 'к': 'k', 'н': 'H', 'о': 'o', 'п': 'n', 'р': 'p', 'с': 'c', 
-        'т': 'T', 'у': 'y', 'ч': '4', 'ш': 'w', 'ь': 'b', 'я': 'R', 'ᵻ': 'l', 'ḍ': 'd', 'Ḥ': 'H', 'ḥ': 'h', 'ḷ': 'l', 'ṃ': 'm', 
-        'ṅ': 'n', 'ṇ': 'n', 'ṭ': 't', 'ẓ': 'z', 'ả': 'a', 'ấ': 'a', 'ế': 'e', 'ề': 'e', 'ễ': 'e', 'ỉ': 'i', 'ồ': 'o', 'ớ': 'o', 
-        'ử': 'u', 'ữ': 'u', 'ἀ': 'a', 'ἁ': 'a', 'ἄ': 'a', 'Ἀ': 'A', 'Ἄ': 'A', 'Ἑ': 'E', 'ἡ': 'n', 'Ἥ': 'H', 'ἰ': 'i', 'ἴ': 'i', 
-        'ἶ': 'i', 'Ἰ': 'I', 'ὐ': 'u', 'ὑ': 'u', 'ῖ': 'i', 'ῦ': 'u', 'ῶ': 'w', 'ﬁ': 'fi', 'ﬂ': 'fl'}
-
-    for c in bad_chars:
-        x = x.replace(c, bad_chars[c]) if c in x else x
-
-    return x
+from typing import Iterable, Dict
 
 # Checks whether a given text is fake news
 # It returns the answer and how fake news 
@@ -75,18 +38,68 @@ class fakenews:
             use_custom_pipeline=False, 
             from_google_bucket=False)
 
-    def check(self):
-        # n_word: the max amount of words the webcrawler outputs
+    def check(self, question:str, query:str, n_results:int, n_words:int, search_method:str, lang:str) -> dict:
+        '''
+        Runs the fact check function
+         a) Gather data using the data_engine
+          1) Make a search on the specified method
+          2) Open each url and extract the text from the webpage
+          3) Minimize the text, to the most important sentences
+         b) Answer the given question
+          1) Preprocess data using specified tokenizer
+          2) Input into the model
+          3) Generate answers and scores
+        It then returns a list of dicts containing important information about the urls
+        return Dict[urls, answers, answer_scores, biases]
+
+        Args:
+            query (:obj: 'str')
+               * Query a.k.a search query. This is the search term
+               * As default it is the same as question
+               * However it may be a good idea to seperate those
+            question (:obj: 'str')
+               * The question that is being asked
+               * Used to rank each sentence and by that making the ML models faster
+            n_results (:obj: 'int')
+               * It's the results that is being returned
+            n_words (:obj: 'int')
+               * Maximum words in each data point
+               * The higher the slower our ML-models will be, but i contains more information
+            search_method (:obj: 'str')
+               * See search.py and then Search.search_methods to get an idea of what search engines is included
+            lang (:obj: 'str[ISO-638-1] language code')
+               * It must be a ISO-638-1
+               * Langauge of the question and thereby also the query
+               * Used to get specific articles from the specified country
+        '''
+
         n_words = 256
 
-        if len(data) > 0:
-            # Translates the query into plain english
-            query = self.translator.translate(query, dest='en').text
+        # Set the query to question if not specified
+        if query == None:
+            query = question
+
+        # Run the data_engine
+        data = data_engine.run(
+            query = query,
+            question = question,
+            n_results = n_results,
+            n_words = n_words,
+            search_method = search_method,
+            lang = lang)
+
+        print('...')
+        print(data)
+        print('...')
+
+        if data:
+            # Translates the query and question into plain english
+            question_en = self.translator.translate(question, dest='en').text
 
             # Do question answering
             answers = self.pipeline(
                 contexts=data, 
-                question=query)
+                question=question_en)
 
             answers, answer_scores, crediabilities = list(zip(*answers))
 
@@ -94,11 +107,25 @@ class fakenews:
                 'links': links,
                 'answers': answers,
                 'answer_scores': answer_scores,
-                'crediabilities': crediabilities}
+                'biases': crediabilities}
 
-        return {'error': 'No results - for some reason we didn\'t find any results with your query'}
+        return {
+            'error': '''
+                No results - for some reason we didn\'t find any results with your query. 
+                This may be a server/code problem. We ask you go open a issue on https://github.com/sorcely/api-lite/issues. 
+                This can get the problem resolved and maybe even help others.'''}
 
 if __name__ == '__main__':
-    m = fakenews('google', threads=2)
-    r = m.check('Where does covid19 originate from')
-    print(r)
+    fakenews_checker = fakenews('google', threads=2)
+
+    results = fakenews_checker.check(
+        question='Where does corona originate from',
+        query=None,
+        n_results=5,
+        n_words=128,
+        search_method='google',
+        lang='en')
+
+    print(results['answers'])
+    print(results['answer_scores'])
+    print(results['biases'])

@@ -39,7 +39,7 @@ class Search:
             self.search_methods.remove('newsapi')
 
     # This makes the actual process
-    def __call__(self, query:str, n_links:int, search_method:str = 'google', language:str = None) -> Iterable:
+    def __call__(self, query:str, n_links:int, search_method:str = 'google', lang:str = None) -> Iterable:
         '''
         Args:
             query (:obj: 'str')
@@ -53,6 +53,10 @@ class Search:
                * This can be effective if Google are IP banning you/us. But also if we want 
                 to search news articles
                * We are validating the search_method through the search_methods function
+            language (:obj: 'str')
+               * It must be a ISO-638-1
+               * Langauge of the question and thereby also the query
+               * Used to get specific articles from the specified country
         '''
 
         # Validate search_method

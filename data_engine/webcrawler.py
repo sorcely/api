@@ -58,10 +58,6 @@ def Webcrawler(urls:Iterable, question:str, n_results:int, n_words:int) -> Itera
         # Translate into english
         # text = translator.translate(text, dest='en').text
 
-        # Shrink down the text so that the ml part is faster
-        # text = wordrank.BM25Okapi(text, question, n_words)
-        text = ' '.join(text.split(' ')[:n_words])
-
         return text
 
     # Iterate over each link to spawn a process
@@ -78,6 +74,7 @@ def Webcrawler(urls:Iterable, question:str, n_results:int, n_words:int) -> Itera
     data = []
     for p in processes:
         p_result = p.join()
+        # If results != None
         if p_result:
             data.append(p_result)
 
