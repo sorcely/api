@@ -42,8 +42,8 @@ def Webcrawler(urls:Iterable, n_results:int) -> Iterable:
         # Run the crawling function
         text = Crawl(url)
 
-        # Translate into english
-        # text = translator.translate(text, dest='en').text
+        # Translate the text
+        translator.translate(text, dest='en').text
 
         return text
 
@@ -98,6 +98,7 @@ def Crawl(url:str) -> str:
             paragraphs = ' '.join(paragraphs)
 
             return paragraphs
+
     return None
 
 class ThreadWithReturn(Thread):
@@ -119,8 +120,8 @@ class ThreadWithReturn(Thread):
         return self._return
 
 if __name__ == "__main__":
-    print(Webcrawler(
+    Webcrawler(
         urls = [
             'https://docs.python.org/3/library/typing.html',
             'https://news.usc.edu/86362/fukushima-disaster-was-preventable-new-study-finds/'],
-        n_results = 256))
+        n_results = 256)
