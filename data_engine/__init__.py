@@ -8,12 +8,12 @@ from wordrank import *
 from typing import Iterable
 
 def run(
-	query:str,
-    question:str,
-    n_results:int,
-    search_method:str = 'google',
-    n_words:int,
-    lang:str = 'en') -> Iterable:
+    query:str, 
+    question:str, 
+    n_results:int, 
+    search_method:str = 'google', 
+    n_words:int = 256, 
+    lang:str = 'en') -> Iterable[Union['text','url']]:
 
     '''
     This function runs the data engine functions
@@ -45,12 +45,16 @@ def run(
     '''
 
     # Make a search to the specified search_method
-    search_fn = Search(None)
-    urls = search_fn(
+    search_engine = Search(None)
+    urls = search_engine(
         query = query, 
         n_links = n_results,
         search_method = search_method,
         lang = lang)
+
+    print('-'*50)
+    print('Done with searcg')
+    print('.'*50)
 
     # Crawl urls to extract information
     data = Webcrawler(
@@ -58,10 +62,26 @@ def run(
         question = question,
         n_results = n_results,)
 
+    print('*'*50)
+    print('done with crawl')
+    print('-'*50)
+
     # Shrink the data
-    bm25_okapi(
+    data = bm25_okapi(
         *data,
         question = question,
         n_words = n_words)
 
-    return data
+    print('='*50)
+    print('Done with all')
+    print('#'*50)
+
+    return list(zip(data, urls))
+
+run(
+    query = 'donald trump election day',
+    question = 'when was donald trump elected',
+    n_results = 5,
+    search_method = 'google',
+    n_words = 256,
+    lang = 'en')
