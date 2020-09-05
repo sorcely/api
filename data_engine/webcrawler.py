@@ -7,11 +7,9 @@ translator = googletrans.Translator()
 import threading
 from threading import Thread
 
-# import wordrank
-
 from typing import Iterable, Callable, Optional
 
-def Webcrawler(urls:Iterable, question:str, n_results:int, n_words:int) -> Iterable:
+def Webcrawler(urls:Iterable, question:str, n_results:int) -> Iterable:
     '''
     asdsdasdsadsadsdas
     asdsdasd asd
@@ -28,9 +26,6 @@ def Webcrawler(urls:Iterable, question:str, n_results:int, n_words:int) -> Itera
            * The maximum results we want to get
            * We're doing this because we also have the buffer
             And we don't want more results than specified
-        n_words (:obj: 'int')
-           * The maximum amount of words returned from each url
-           * The lower, the faster our ml-models will be.
     '''
 
     def MultiThreadProcess(inputs:dict) -> str:
@@ -42,15 +37,13 @@ def Webcrawler(urls:Iterable, question:str, n_results:int, n_words:int) -> Itera
         Args:
             inputs (:obj: 'dict')
                * A dict containing inputs the functions
-               * It contains the url, question, n_words
+               * It contains the url, question
                * url contains the textual data that we want to extract
                * question is the question asked by the user, and is used to find the most probable sentences
-               * n_words is maximum amount of words returned by this function
         '''
 
         url = inputs['url']
         question = inputs['question']
-        n_words = inputs['n_words']
 
         # Run the crawling function
         text = Crawl(url)
@@ -63,10 +56,9 @@ def Webcrawler(urls:Iterable, question:str, n_results:int, n_words:int) -> Itera
     # Iterate over each link to spawn a process
     processes = []
     for u in urls:
-        thread = ThreadWithReturn(target=MultiThreadProcess, args=[{
-            'url': u,
-            'question': question,
-            'n_words': n_words}])
+        thread = ThreadWithReturn(
+            target=MultiThreadProcess, 
+            args=[{'url': u, 'question': question}])
         thread.start()
         processes.append(thread)
 
