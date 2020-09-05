@@ -88,10 +88,6 @@ class fakenews:
             search_method = search_method,
             lang = lang)
 
-        print('...')
-        print(data)
-        print('...')
-
         if data:
             # Translates the query and question into plain english
             question_en = self.translator.translate(question, dest='en').text
