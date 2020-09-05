@@ -52,29 +52,16 @@ def run(
         search_method = search_method,
         lang = lang)
 
-    print('-'*50)
-    print('Done with searcg')
-    print('.'*50)
-
     # Crawl urls to extract information
     data = Webcrawler(
         urls = urls,
-        question = question,
-        n_results = n_results,)
-
-    print('*'*50)
-    print('done with crawl')
-    print('-'*50)
+        n_results = n_results)
 
     # Shrink the data
     data = bm25_okapi(
         *data,
         question = question,
         n_words = n_words)
-
-    print('='*50)
-    print('Done with all')
-    print('#'*50)
 
     return list(zip(data, urls))
 

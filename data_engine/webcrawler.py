@@ -9,7 +9,7 @@ from threading import Thread
 
 from typing import Iterable, Callable, Optional
 
-def Webcrawler(urls:Iterable, question:str, n_results:int) -> Iterable:
+def Webcrawler(urls:Iterable, n_results:int) -> Iterable:
     '''
     asdsdasdsadsadsdas
     asdsdasd asd
@@ -18,10 +18,6 @@ def Webcrawler(urls:Iterable, question:str, n_results:int) -> Iterable:
     Args:
         urls (:obj: 'Iterable')
            * The urls that we want to extract the information
-        question (:obj: 'str')
-           * The question asked by the user
-           * Used to rank the sentence with the highest 
-            probability of finding the answer within it
         n_results (:obj: 'int')
            * The maximum results we want to get
            * We're doing this because we also have the buffer
@@ -37,13 +33,11 @@ def Webcrawler(urls:Iterable, question:str, n_results:int) -> Iterable:
         Args:
             inputs (:obj: 'dict')
                * A dict containing inputs the functions
-               * It contains the url, question
+               * It contains the url
                * url contains the textual data that we want to extract
-               * question is the question asked by the user, and is used to find the most probable sentences
         '''
 
         url = inputs['url']
-        question = inputs['question']
 
         # Run the crawling function
         text = Crawl(url)
@@ -58,7 +52,7 @@ def Webcrawler(urls:Iterable, question:str, n_results:int) -> Iterable:
     for u in urls:
         thread = ThreadWithReturn(
             target=MultiThreadProcess, 
-            args=[{'url': u, 'question': question}])
+            args=[{'url': u}])
         thread.start()
         processes.append(thread)
 
@@ -82,23 +76,28 @@ def Crawl(url:str) -> str:
     '''
 
     # Get the page source
-    res = requests.get(url)
+    try:
+        res = requests.get(url, timeout=0.5)
+        timeout_err = False
+    except requests.exceptions.Timeout as err:
+        timeout_err = True
 
     # Checks if the connection was successfull
-    if res.status_code == 200:
-        content = res.content
-            
-        # Close connection
-        res.close()
+    if not timeout_err:
+        if res.status_code == 200:
+            content = res.content
 
-        # Parse the html using BeautifulSoup
-        parsed = Soup(content, 'html.parser')
-        paragraphs = parsed.find_all(text=True)
+            # Close connection
+            res.close()
 
-        # Turn the paragraphs into a string
-        paragraphs = ' '.join(paragraphs)
+            # Parse the html using BeautifulSoup
+            parsed = Soup(content, 'html.parser')
+            paragraphs = parsed.find_all(text=True)
 
-        return paragraphs
+            # Turn the paragraphs into a string
+            paragraphs = ' '.join(paragraphs)
+
+            return paragraphs
     return None
 
 class ThreadWithReturn(Thread):
@@ -120,9 +119,8 @@ class ThreadWithReturn(Thread):
         return self._return
 
 if __name__ == "__main__":
-    Webcrawler(
-        ['https://docs.python.org/3/library/typing.html',
-         'https://news.usc.edu/86362/fukushima-disaster-was-preventable-new-study-finds/'],
-        'Heysa, what\'s your name',
-        2,
-        256)
+    print(Webcrawler(
+        urls = [
+            'https://docs.python.org/3/library/typing.html',
+            'https://news.usc.edu/86362/fukushima-disaster-was-preventable-new-study-finds/'],
+        n_results = 256))
