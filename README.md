@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://sorcely.tech">
-    <img src="https://github.com/sorcely/api-lite/blob/master/.github/logo-lg.png" height="115">  
+    <img src="https://github.com/sorcely/api-lite/blob/master/.github/logo-lg.png" height="200">  
   </a>
   <br><b>Developing a world without fake-news through state-of-the-art nlp models.</b>
 </p>
@@ -30,7 +30,8 @@ This basically does the same, but it assumes that some software hasn't been inst
 | Data Engine   | ?            | 0.2s           |
 | **In total**  | **2-4s**     | **1.2s**       |
 
-# Goals for v1.0 release (before september)
+# Goals / roadmap
+## Goals for v1.0 release (deadline: september)
 * Improve lookup speed  
   ✅Use threading in the webcrawler and translation  
   ✅Use batch prediction (did not improve that much)  
@@ -44,6 +45,18 @@ This basically does the same, but it assumes that some software hasn't been inst
 As you can see, we still need to implement the specific websites.  
 This along with a better question answering system, is our main goal in October.
 
+## Goals for v2.0 release (deadline: january)
+* Improve answer-engine  
+  ❌Ensemble a natural questions model with a SQuAD model  
+* Improve lookup speed  
+  ❌Get even better GPUs  
+  ❌Optimize the BERT input pipeline  
+* Improve data-engine  
+  ❌Find the date, author and publisher    
+  ❌Add specific websites like snopes.com, factcheck.org  
+* Add a bias-engine  
+  ❌Add specific websites like snopes.com, factcheck.org  
+ 
 
 # Creating a new feature
 ### Code style
@@ -53,6 +66,15 @@ This along with a better question answering system, is our main goal in October.
 4. Describe the use of the variables inputted into the function or class
 5. Write concise comments above complicated code. Use the hashtag for this
 6. Use an indention of 4 with spaces
+
+### Commits
+* Please make sure to add emojies representing the action you made. This will make the commits more visual and faster  
+```Added``` = ```➕```  
+```Fixed``` = ```🔧```  
+```Cleaned``` = ```🧹```  
+```Removed``` = ```🚮```  
+```Updated``` = ```🔁```   
+Feel free to add a more fitting emoji if you need to. This is just for inspiration.
 
 ### Todo list of what to do
 * Make sure you've met the requirements from the code style
