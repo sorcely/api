@@ -5,32 +5,33 @@
   <br><b>Developing a world without fake-news through state-of-the-art nlp models.</b>
 </p>
 
-# 📜 About
-We've built an fact checker using a variety of NLP models. We believe to have an as big impact as possible, we want to make every website able to use this software, even for free. However it's best to use GPUs for this softwase. We're using a lot of ML and thus a lot of compute. You can either use your own GPU server, or you can choose to buy a subscription to our servers.  
-We hope you'd implement this into your own website, and we'd love to have you contributing to our project.  
-Together we can chance the world. 
+# Our goal
+We're building a fake news detector by using AI and NLP to analyze data uploaded to the internet.  
+We aim to integrate this API into every website on the planet - at least every website who wants to be trusted.  
+We want to make the fact checking as easy as possible for everyone through AI. 
 
-- Made with love from Denmark and the rest of the world.
+Made with ❤ from Denmark and the 🌍
 
-# 📥 Installation
-1. ```git clone https://github.com/sorcely/api.git```
+# Set up
+1. ```git clone https://github.com/sorcely/api-lite.git```
 2. ```pip install -r requirements.txt```
 3. ```python run.py```
+We recommend that you're using python 3.7.x, this is the version we used to create this
 
+## Install on a Linux server
 However if you want to install on a Linux server, please run the setup.sh  
 ```sudo setup.sh```  
-This basically does the same, but it assumes Python, git and so on hasn't been installed yet.
+This basically does the same, but it assumes that some software hasn't been installed yet. This software include python, pip and git
 
-# ⏱ Time per lookup
+# Specs
 | Engine Type   | Current Time | Preferred Time |
 | :---:         | :---:        | :---:          |
 | Answer Engine | 2-3s (GPU)   | 1s             |
 | Data Engine   | ?            | 0.2s           |
-| **In total**  | **20-30s**   | **1.2s**       |
+| **In total**  | **2-4s**     | **1.2s**       |
 
-# 🎯 Goals for v1.0 release (before september)
+# Goals for v1.0 release (before september)
 * Improve lookup speed  
-  ❌Use GPUs for the AI (speed increase up to 120x)  
   ✅Use threading in the webcrawler and translation  
   ✅Use batch prediction (did not improve that much)  
 * Improve answer-engine (nlp library)  
@@ -40,34 +41,30 @@ This basically does the same, but it assumes Python, git and so on hasn't been i
   ❌Add specific websites like snopes.com, factcheck.org  
   ✅Add the News API  
 
-# 🔧 Creating a new feature
-**Requirements when creating a new feature**
-1. Write clean and well commented code
-2. Write tests for the newly created code
-3. Implement the feature into the API
-4. Add new dependcies to requirements.txt
-5. Test the function in tests/test_$MODULE.py  
-Where module could be *answer-engine*, *data-engine*, *run* or *server*
+As you can see, we still need to implement the specific websites.  
+This along with a better question answering system, is our main goal in October.
 
-**Pushing the code**
-1. Write a description of the feature you'll like to have
-2. Write pros and cons
-3. Document the results on the testset
 
-# 🧪 Testing
-You can either choose to run all tests at once, a smaller test on just the run function or run a specific tests for a module like answer-engine or data-engine.
+# Creating a new feature
+### Code style
+1. Add variable decorations
+2. Define what output you should expect
+3. Make a comment describing the function or class right. The comment should be placed right beneeth the *def* part
+4. Describe the use of the variables inputted into the function or class
+5. Write concise comments above complicated code. Use the hashtag for this
+6. Use an indention of 4 with spaces
 
-#### Tests you can run
-* tests/test.py
-* tests/test_run.py
-* tests/test_server.py
-* tests/test_answer_engine.py
-* tests/test_data_engine.py
+### Todo list of what to do
+* Make sure you've met the requirements from the code style
+* Write tests inside the tests folder
+* Add dependcies to the requirements.txt
+* Add the function into code if not done prior
+* Lastly run the tests you created
 
 We're then checking if the output formata and dtypes is correct. And also just checks if it compiles.  
 Maybe add more specialized assertions. But we don't believe it's needed yet.
 
-# 📧 Contact
+# Contact
 If you need help, please open an issue or send an email.
 
 ### Emails 
