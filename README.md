@@ -1,6 +1,6 @@
 <p align="center">
   <a href="https://sorcely.tech">
-    <img src="https://github.com/Sorcely/api-lite/blob/master/.github/logo-lg.png" height="115">  
+    <img src="https://github.com/sorcely/api-lite/blob/master/.github/logo-lg.png" height="115">  
   </a>
   <br><b>Developing a world without fake-news through state-of-the-art nlp models.</b>
 </p>
