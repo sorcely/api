@@ -49,10 +49,10 @@ This along with a better question answering system, is our main goal in October.
 ## Goals for v2.0 release (deadline: january)
 * Improve answer-engine  
   ❌Ensemble a natural questions model with a SQuAD model  
-* Improve lookup speed
+* Improve lookup speed  
   ❌Get even better GPUs & TPUs  
   ❌Optimize the BERT input pipeline  
-* Cheaper to run
+* Cheaper to run  
   ❌Write GPU sharing software
 * Improve data-engine  
   ❌Find the date, author and publisher    
