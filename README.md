@@ -16,12 +16,12 @@ Made with ❤ from Denmark and the 🌍
 1. ```git clone https://github.com/sorcely/api-lite.git```
 2. ```pip install -r requirements.txt```
 3. ```python run.py```
-We recommend that you're using python 3.7.x, this is the version we used to create this
+We recommend that you're using python 3.7.x.
 
 ## Install on a Linux server
 However if you want to install on a Linux server, please run the setup.sh  
 ```sudo setup.sh```  
-This basically does the same, but it assumes that some software hasn't been installed yet. This software include python, pip and git
+This basically does the same, but it assumes that some software hasn't been installed yet. This software that will be installed is: ```python```, ```pip``` & ```git```
 
 # Specs
 | Engine Type   | Current Time | Preferred Time |
@@ -29,6 +29,7 @@ This basically does the same, but it assumes that some software hasn't been inst
 | Answer Engine | 2-3s (GPU)   | 1s             |
 | Data Engine   | ?            | 0.2s           |
 | **In total**  | **2-4s**     | **1.2s**       |
+
 
 # Goals / roadmap
 ## Goals for v1.0 release (deadline: september)
@@ -48,15 +49,17 @@ This along with a better question answering system, is our main goal in October.
 ## Goals for v2.0 release (deadline: january)
 * Improve answer-engine  
   ❌Ensemble a natural questions model with a SQuAD model  
-* Improve lookup speed  
-  ❌Get even better GPUs  
+* Improve lookup speed
+  ❌Get even better GPUs & TPUs  
   ❌Optimize the BERT input pipeline  
+* Cheaper to run
+  ❌Write GPU sharing software
 * Improve data-engine  
   ❌Find the date, author and publisher    
   ❌Add specific websites like snopes.com, factcheck.org  
 * Add a bias-engine  
   ❌Add specific websites like snopes.com, factcheck.org  
- 
+
 
 # Creating a new feature
 ### Code style
@@ -74,6 +77,8 @@ This along with a better question answering system, is our main goal in October.
 ```Cleaned``` = ```🧹```  
 ```Removed``` = ```🚮```  
 ```Updated``` = ```🔁```   
+```Bug``` = ```🐛```
+
 Feel free to add a more fitting emoji if you need to. This is just for inspiration.
 
 ### Todo list of what to do
@@ -90,4 +95,4 @@ Maybe add more specialized assertions. But we don't believe it's needed yet.
 If you need help, please open an issue or send an email.
 
 ### Emails 
-* [Marius, founder](mailto:marius.schlichtkrull@gmail.com)
+* [Marius J. Schlichtkrull, founder](mailto:marius.schlichtkrull@gmail.com)
