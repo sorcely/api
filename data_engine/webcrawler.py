@@ -1,4 +1,5 @@
 from bs4 import BeautifulSoup as Soup
+from bs4 import Comment
 import requests
 
 import googletrans
@@ -11,17 +12,15 @@ from typing import Iterable, Callable, Optional
 
 def Webcrawler(urls:Iterable, n_results:int) -> Iterable:
     '''
-    asdsdasdsadsadsdas
-    asdsdasd asd
-    asd asd asdsadasdasd ad
+    Opens and crawls the given list of urls and then returns 
+    a list of webpage content with the range of n_results
 
-    Args:
-        urls (:obj: 'Iterable')
-           * The urls that we want to extract the information
-        n_results (:obj: 'int')
-           * The maximum results we want to get
-           * We're doing this because we also have the buffer
-            And we don't want more results than specified
+    urls (:obj: 'Iterable')
+        * The urls that we want to extract the information
+    n_results (:obj: 'int')
+        * The maximum results we want to get
+        * We're doing this because we also have the buffer
+          And we don't want more results than specified
     '''
 
     def MultiThreadProcess(inputs:dict) -> str:
@@ -30,11 +29,11 @@ def Webcrawler(urls:Iterable, n_results:int) -> Iterable:
         We're using threading since we aren't really calculating (beside the word rank)
         But all other function are using API's or just "downloading" stuff
 
-        Args:
-            inputs (:obj: 'dict')
-               * A dict containing inputs the functions
-               * It contains the url
-               * url contains the textual data that we want to extract
+        
+        inputs (:obj: 'dict')
+            * A dict containing inputs the functions
+            * It contains the url
+            * url contains the textual data that we want to extract
         '''
 
         url = inputs['url']
@@ -68,11 +67,11 @@ def Webcrawler(urls:Iterable, n_results:int) -> Iterable:
 
 def Crawl(url:str) -> str:
     '''
-    The function that opens, crawls and parses the given url
-    It's used in the multiprocess
+    The function that opens, crawls and parses the given url.
+    It's used in the multiprocess.
 
-    Args:
-        url (:obj: 'str'): The url we want to open
+    url (:obj: 'str'): 
+        The url we want to open
     '''
 
     # Get the page source
@@ -87,18 +86,28 @@ def Crawl(url:str) -> str:
         if res.status_code == 200:
             content = res.content
 
-            # Close connection
+            # Close connections
             res.close()
 
             # Parse the html using BeautifulSoup
-            parsed = Soup(content, 'html.parser')
-            paragraphs = parsed.find_all(text=True)
+            parsed_content = Soup(content, 'html.parser')
+            
+            # Filter out script, style, comments tags
+            if parsed_content.script != None:
+                _ = [i.decompose() for i in parsed_content.find_all('script')]
+            if parsed_content.style != None:
+                _ = [i.decompose() for i in parsed_content.find_all('style')]
+            if parsed_content.script != None:
+                _ = [i.decompose() for i in parsed_content.find_all(text=lambda t: isinstance(t, Comment))]
+            del _
 
+            paragraphs = [str(print(i)) for i in parsed_content.find_all(text=True)]
+              
             # Turn the paragraphs into a string
             paragraphs = ' '.join(paragraphs)
 
             return paragraphs
-
+            
     return None
 
 class ThreadWithReturn(Thread):
@@ -120,8 +129,9 @@ class ThreadWithReturn(Thread):
         return self._return
 
 if __name__ == "__main__":
-    Webcrawler(
+    results = Webcrawler(
         urls = [
-            'https://docs.python.org/3/library/typing.html',
-            'https://news.usc.edu/86362/fukushima-disaster-was-preventable-new-study-finds/'],
+            'https://news.usc.edu/86362/fukushima-disaster-was-preventable-new-study-finds/',
+            'https://news.usc.edu/trojan-family/mars-colony-on-earth-hawaii-usc-alumni/'],
         n_results = 256)
+    print(results[0])
