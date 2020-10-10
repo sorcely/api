@@ -21,7 +21,9 @@ class DataEngineTests(unittest.TestCase):
             n_words = 256,
             lang = 'en')
 
-        self.assertTrue(len(results[0][0]) <= 256, 'The results is longer than ´n_words´')
+        self.assertTrue(
+            False not in [len(i) <= 256 for i in results['data']], 
+            'The results is longer than ´n_words´')
 
     def test_google_search(self):
         '''
@@ -51,7 +53,6 @@ class DataEngineTests(unittest.TestCase):
         
         results = data_engine.Webcrawler(
             urls = [link, link1, link2],
-            question = 'what does this provide',
             n_results = 1)
 
         self.assertTrue(

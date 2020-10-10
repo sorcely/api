@@ -19,10 +19,10 @@ class Search:
 
     def __init__(self, newsapi_key:Optional[str] = None):
         '''
-        Args:
-            newsapi_key (:obj: 'str')
-               * The api key to gain access to the news api
-               * Right now it's stored in the enviroment variable
+        ### Args ###
+        newsapi_key (:obj: 'str')
+            * The api key to gain access to the news api
+            * Right now it's stored in the enviroment variable
         '''
 
         # A list of all available search_engines
@@ -98,6 +98,8 @@ class Search:
                     api_obj=self.newsapi_obj,
                     query=query,
                     lang=lang)
+                # Turn the results into a dict
+                results = {'urls': results}
                 return results
             return search_fn
 
@@ -126,9 +128,9 @@ class Search:
         method = method.lower()        
 
         if method in self.search_methods:
-            return method # We're lowering it
-        
-        return available_engines[0]
+            return method
+
+        return self.search_methods[0]
 
 def newsapi_fn(query:str, lang:str = 'en', api_obj:NewsApiClient = None) -> Iterable:
     '''
