@@ -2,6 +2,7 @@ from rank_bm25 import BM25Okapi
 
 import numpy as np
 import math as M
+import nltk
 from nltk import word_tokenize as tokenize
 
 import re
@@ -19,15 +20,15 @@ def bm25_okapi(*texts:Iterable, question:str, n_words:int = 256) -> Iterable[str
     The sentences is given the scored based on the question. In a future version maybe 
     include word vectors, so that the meaning of each word is scored rather than the word itself
 
-    Args:
-        texts (:obj:'iterable')
-          * A list of texts extracted from the websites
-        question (:obj:'str')
-          * The question asked by the user
-          * Using the question instead of the query, since we want to get the sentence most likely to get answered
-        n_words (:obj:'int')
-          * The amount of words each text output should be
-          * Smart to have the same as our QA and classification model
+    ### Args ###
+    texts (:obj:'iterable')
+        * A list of texts extracted from the websites
+    question (:obj:'str')
+        * The question asked by the user
+        * Using the question instead of the query, since we want to get the sentence most likely to get answered
+    n_words (:obj:'int')
+        * The amount of words each text output should be
+        * Smart to have the same as our QA and classification model
     '''
 
     sentences = []
@@ -41,7 +42,7 @@ def bm25_okapi(*texts:Iterable, question:str, n_words:int = 256) -> Iterable[str
         # Maybe change this to a 
         text_ = [tokenize(i) for i in text]
 
-        question_ = nltk.word_tokenize(question)
+        question_ = tokenize(question)
 
         # Initialize the bm25 okapi module
         bm25_fn = BM25Okapi(text_)
@@ -75,14 +76,14 @@ def BM25_custom(*texts:Iterable, secondary_text:str, batch:bool = False) -> Iter
     The reason for writing this, is to quickly develop word vectors into it.
     But currently it's planned to just keep it as a stand word-token algorithm
 
-    Args:
-        texts (:obj:'iterable')
-          * A list of texts extracted from the websites
-        secondary_text (:obj:'str')
-          * Basically the question asked by the user
-          * Using the question instead of the query, since we want to get the sentence most likely to get answered
-        batch (:obj:'bool')
-          * Whether to compare each text in batches. So it also takes into consideration the other texts.
+    ### Args ###
+    texts (:obj:'iterable')
+        * A list of texts extracted from the websites
+    secondary_text (:obj:'str')
+        * Basically the question asked by the user
+        * Using the question instead of the query, since we want to get the sentence most likely to get answered
+    batch (:obj:'bool')
+        * Whether to compare each text in batches. So it also takes into consideration the other texts.
     '''
 
     def parse(corpus:str) -> Union[dict, list]:
@@ -114,9 +115,9 @@ def BM25_custom(*texts:Iterable, secondary_text:str, batch:bool = False) -> Iter
         Calculates inverse frequencies of terms in the given corpus
         It's also known as just IDF
 
-        Args:
-            corpus_len (:obj: 'int')
-            contains_n (:obj: 'int')
+        ### Args ###
+        corpus_len (:obj: 'int')
+        contains_n (:obj: 'int')
         '''
 
         return M.log(
@@ -127,9 +128,9 @@ def BM25_custom(*texts:Iterable, secondary_text:str, batch:bool = False) -> Iter
         Using tge term frequency algorithm
         f(t,d) / Σ f(t',d)
 
-        Args:
-            term
-            term_freqs
+        ### Args ###
+        term
+        term_freqs
         '''
 
         # Term frequency of the given term
@@ -145,11 +146,11 @@ def BM25_custom(*texts:Iterable, secondary_text:str, batch:bool = False) -> Iter
         '''
         Calculates the scores
 
-        Args:
-            doc_len (:obj: 'int')
-            avg_doc_len (:obj: 'float')
-            avg_doc_len (:obj: 'float')
-            avg_doc_len (:obj: 'float')
+        ### Args ###
+        doc_len (:obj: 'int')
+        avg_doc_len (:obj: 'float')
+        avg_doc_len (:obj: 'float')
+        avg_doc_len (:obj: 'float')
         '''
 
         for i in term_tokens:

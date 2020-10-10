@@ -10,6 +10,8 @@ from threading import Thread
 
 from typing import Iterable, Callable, Optional
 
+import httpcore
+
 def Webcrawler(urls:Iterable, n_results:int) -> Iterable:
     '''
     Opens and crawls the given list of urls and then returns 
@@ -29,7 +31,7 @@ def Webcrawler(urls:Iterable, n_results:int) -> Iterable:
         We're using threading since we aren't really calculating (beside the word rank)
         But all other function are using API's or just "downloading" stuff
 
-        
+        ### Args ###
         inputs (:obj: 'dict')
             * A dict containing inputs the functions
             * It contains the url
@@ -42,7 +44,11 @@ def Webcrawler(urls:Iterable, n_results:int) -> Iterable:
         text = Crawl(url)
 
         # Translate the text
-        translator.translate(text, dest='en').text
+        if text:
+            try:
+                text = translator.translate(text, dest='en').text
+            except httpcore._exceptions.WriteError as err:
+                print('**Could not translate data. Continuing...')
 
         return text
 
@@ -59,7 +65,6 @@ def Webcrawler(urls:Iterable, n_results:int) -> Iterable:
     data = []
     for p in processes:
         p_result = p.join()
-        # If results != None
         if p_result:
             data.append(p_result)
 
@@ -70,6 +75,7 @@ def Crawl(url:str) -> str:
     The function that opens, crawls and parses the given url.
     It's used in the multiprocess.
 
+    ### Args ###
     url (:obj: 'str'): 
         The url we want to open
     '''
@@ -101,8 +107,8 @@ def Crawl(url:str) -> str:
                 _ = [i.decompose() for i in parsed_content.find_all(text=lambda t: isinstance(t, Comment))]
             del _
 
-            paragraphs = [str(print(i)) for i in parsed_content.find_all(text=True)]
-              
+            paragraphs = parsed_content.find_all(text=True)
+
             # Turn the paragraphs into a string
             paragraphs = ' '.join(paragraphs)
 

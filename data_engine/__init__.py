@@ -23,29 +23,29 @@ def run(
 	  c) Rank each text
 	  d) return an iterable
 
-    Args:
-        query (:obj: 'str')
-          * Query a.k.a search query. This is the search term
-          * As default it is the same as question
-          * However it may be a good idea to seperate those
-        question (:obj: 'str')
-          * The question that is being asked
-          * Used to rank each sentence and by that making the ML models faster
-        n_results (:obj: 'int')
-          * It's the results that is being returned
-        n_words (:obj: 'int')
-          * Maximum words in each data point
-          * The higher the slower our ML-models will be, but i contains more information
-        search_method (:obj: 'str')
-          * See search.py and then Search.search_methods to get an idea of what search engines is included
-        lang (:obj: 'str[ISO-638-1] language code')
-          * It must be a ISO-638-1
-          * Langauge of the question and thereby also the query
-          * Used to get specific articles from the specified country
+    ### Args ###
+    query (:obj: 'str')
+        * Query a.k.a search query. This is the search term
+        * As default it is the same as question
+        * However it may be a good idea to seperate those
+    question (:obj: 'str')
+        * The question that is being asked
+        * Used to rank each sentence and by that making the ML models faster
+    n_results (:obj: 'int')
+        * It's the results that is being returned
+    n_words (:obj: 'int')
+        * Maximum words in each data point
+        * The higher the slower our ML-models will be, but i contains more information
+    search_method (:obj: 'str')
+        * See search.py and then Search.search_methods to get an idea of what search engines is included
+    lang (:obj: 'str[ISO-638-1] language code')
+        * It must be a ISO-638-1
+        * Langauge of the question and thereby also the query
+        * Used to get specific articles from the specified country
     '''
 
     # Make a search to the specified search_method
-    search_engine = Search(None)
+    search_engine = Search()
     urls = search_engine(
         query = query, 
         n_links = n_results,
@@ -63,12 +63,17 @@ def run(
         question = question,
         n_words = n_words)
 
-    return list(zip(data, urls))
+    return {
+        'data': data,
+        'urls': urls}
 
-run(
-    query = 'donald trump election day',
-    question = 'when was donald trump elected',
-    n_results = 5,
-    search_method = 'google',
-    n_words = 256,
-    lang = 'en')
+if __name__ == "__main__":
+    results = run(
+        query = 'donald trump election day',
+        question = 'when was donald trump elected',
+        n_results = 5,
+        search_method = 'google',
+        n_words = 256,
+        lang = 'en')
+
+    print(len(results['urls']))

@@ -28,9 +28,7 @@ MODEL_PATH = 'models' if __name__ != '__main__' else '../models/' # Changing the
 # Just for testing
 if __name__ == "__main__":
     answer = pipeline(
-        model_names={
-            'qa': 'ahotrod/electra_large_discriminator_squad2_512',
-            'cs': f'{MODEL_PATH}/GRU-article-crediability.h5'},
+        model_names={'qa': 'ahotrod/electra_large_discriminator_squad2_512'},
         use_custom_pipeline=True,
         from_google_bucket=False)
 
