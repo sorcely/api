@@ -1,3 +1,4 @@
+# New
 import sys
 sys.path.append('answer_engine/')
 sys.path.append('../answer_engine/')
@@ -10,12 +11,15 @@ from transformers.data.metrics.squad_metrics import compute_predictions_logits
 
 # Preprocessing
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
-from transformers import squad_convert_examples_to_features
 from transformers.data.processors.squad import (
-    SquadResult, 
-    SquadV2Processor, 
     SquadExample,
-    SquadFeatures)
+    SquadFeatures,
+    SquadResult,
+    SquadV2Processor)
+
+# Multiprocessing
+import threading
+from threading import Thread
 
 # File management dependcies
 import google_storage
@@ -36,7 +40,6 @@ sns.set(style='darkgrid')
 # Import typing
 from typing import *
 from transformers import PreTrainedModel, PreTrainedTokenizer
-
 
 # Initialize global paths
 ANSWER_ENGINE_PATH = 'answer_engine/' if __name__ != '__main__' else '' # Changing the path to files in the answer_engine folder
@@ -69,19 +72,20 @@ class question_answering:
 
         ### Args ###
         contexts (:obj: `list`)
-            * an iterable of the contexts possibly containing the answer to the question
+            An iterable of the contexts possibly containing the answer to the question
         question (:obj: `str`)
-            * The question we want answered
+            The question we want answered
         max_len (:obj: `int`)
-            * The maximum length of the contexts
+            The maximum length of the contexts
         '''
 
         # Using the transformers own SQuAD preprocessing module
+
         examples = []
         for i, text in enumerate(contexts):
             example = SquadExample(
                 qas_id=i,
-                question_text=question, 
+                question_text=question,
                 context_text=text,
                 answer_text=None,
                 start_position_character=None,
@@ -91,22 +95,17 @@ class question_answering:
             examples.append(example)
 
         # Creates a dataset which easily can be inputted into the model
-        features, dataset = squad_convert_examples_to_features(
+        feature_dict, features = squad_convert_examples_to_features_(
             examples=examples,
             tokenizer=self.tokenizer, 
             max_seq_length=max_len,
             doc_stride=128,
             max_query_length=64,
-            is_training=False,
-            return_dataset='pt', 
-            threads=len(examples),
-            tqdm_enabled=False)
+            threads=len(examples))
 
         # Sampels and converts the dataset to a dataloader
         batch_size = len(examples) if len(examples) < self.max_batch_sz else self.max_batch_sz
-        
-        sampler = SequentialSampler(dataset)
-        dataloader = DataLoader(dataset, sampler=sampler, batch_size=batch_size)
+        dataloader = DataLoader(feature_dict, batch_size=batch_size)
 
         # Data variables
         results = []
@@ -116,32 +115,34 @@ class question_answering:
         self.model.eval()
 
         for batch in dataloader:
-            # Turns the batch into device
-            batch = [i.to(self.device) for i in batch]
+            # Set the inputs into the specified device
+            input_ids = batch['input_ids'].to(self.device)
+            attention_mask = batch['attention_mask'].to(self.device)
+            token_type_ids = batch['token_type_ids'].to(self.device)
 
             with torch.no_grad():
                 inputs = {
-                    'input_ids': batch[0],
-                    'attention_mask': batch[1],
-                    'token_type_ids': batch[2]}
+                    'input_ids': input_ids,
+                    'attention_mask': attention_mask,
+                    'token_type_ids': token_type_ids}
 
                 # The indices where the context is
-                example_indices = batch[3]
+                example_indices = batch['example_index']
 
                 # Make a prediction
                 outputs = self.model(**inputs)
 
                 for i, examples_idx in enumerate(example_indices):
-                    i_feature = features[examples_idx.item()]
+                    i_feature = feature_dict[examples_idx.item()]
                     unique_id = i_feature.unique_id
 
                     start_logits = outputs[0][i].detach().cpu().numpy()
                     end_logits = outputs[1][i].detach().cpu().numpy()
 
                     scores = score_answers(
-                        start_scores = start_logits, 
+                        start_scores = start_logits,
                         end_scores = end_logits,
-                        seqlen=max_len, 
+                        seqlen=max_len,
                         n_best=1)
                     answer_scores.append(scores)
 
@@ -161,8 +162,138 @@ class question_answering:
 
         return list(zip(predictions, answer_scores))
 
+def squad_convert_examples_to_features_(examples:Iterable[SquadExample], tokenizer:PreTrainedTokenizer, max_seq_length:int, doc_stride:int, max_query_length:int, threads:int):
+    '''
+    Encode the examples into features
+    '''
+
+    args = {
+        'max_seq_length': max_seq_length,
+        'doc_stride': doc_stride,
+        'max_query_length': max_query_length}
+
+    def encode_fn(example:SquadExample, args:Dict, id_:int) -> Dict:
+        context = example.context_text
+        question = example.question_text
+
+        output_dict =  tokenizer.encode_plus(
+            text = question,
+            text_pair = context,
+            add_special_tokens = True,
+            padding = 'max_length',
+            truncation = 'only_second',
+            max_length = args['max_seq_length'],
+            stride = args['doc_stride'],
+            return_tensors = 'pt')
+
+        # Remove the "first" list so that it has the shape of [max_len]
+        output_dict['input_ids'] = torch.squeeze(output_dict['input_ids'])
+        output_dict['attention_mask'] = torch.squeeze(output_dict['attention_mask'])
+        output_dict['token_type_ids'] = torch.squeeze(output_dict['token_type_ids'])
+
+        # Add example_index: Represents what index this lies on
+        output_dict.update({'example_index': id_})
+
+        # unique id: Represents the specific feature
+        output_dict.update({'unique_id': 1000000000 + id_})
+
+        # qas_id: Represents the specific feature
+        output_dict.update({'qas_id': example.qas_id})
+
+        # token_to_orig_index: Represents the __XXX__
+        # tokens: Represents each word in the context, so the word tokens in the context
+        token_to_orig_index = []
+        tokens = []
+        for i, tok in enumerate(example.doc_tokens):
+            sub_tokens = tokenizer.tokenize(tok)
+            for sub_tok in sub_tokens:
+                token_to_orig_index.append(i)
+                tokens.append(sub_tok)
+
+        # paragraph_len: Represents the length of the context tokens
+        paragraph_len = len(token_to_orig_index)
+
+        # token_to_orig_map: Represents where the given index of a token corresponds to in the given text (question + context)
+        token_to_orig_map = {}
+        sequence_added_tokens = tokenizer.max_len - tokenizer.max_len_single_sentence
+        for i in range(paragraph_len):
+            index = len(question.split(' ')) + sequence_added_tokens + i
+            token_to_orig_map[index] = token_to_orig_index[i]
+
+        # token_is_max_context: IDK
+        token_is_max_context = {i:True for i in token_to_orig_map}
+
+        # Create the features also
+        features = SquadFeatures(
+            input_ids = output_dict['input_ids'], # Required
+            attention_mask = output_dict['attention_mask'], # Required
+            token_type_ids = output_dict['token_type_ids'], # Required
+            cls_index = None,
+            p_mask = None,
+            example_index = output_dict['example_index'], # Required
+            unique_id = output_dict['unique_id'],         # Required
+            paragraph_len = paragraph_len,                # Required
+            token_is_max_context = token_is_max_context,  # Required 
+            tokens = tokens,                              # Required
+            token_to_orig_map = token_to_orig_map,        # Required
+            start_position = None,
+            end_position = None,
+            is_impossible = False, 
+            qas_id = output_dict['qas_id'])               # Required
+
+        return output_dict, features
+
+    # Code for multiprocessing (threads)
+    class ThreadWithReturn(Thread):
+        '''
+        A custom Thread that actually returns a value
+        We're using this Thread object to run the crawl and translate pages synchronously
+        '''
+
+        def __init__(self, group=None, target=None, name=None, args=(), kwargs={}):
+            Thread.__init__(self, group=group, target=target, name=name, args=args, kwargs=kwargs)
+            self._return = None
+
+        def run(self):
+            if self._target != None:
+                self._return = self._target(*self._args, **self._kwargs)
+
+        def join(self, *args):
+            Thread.join(self, *args)
+            return self._return
+
+    # Spawns processes
+    '''
+    processes = []
+    for i, ex in enumerate(examples):
+        thread = ThreadWithReturn(
+            target = encode_fn,
+            args = (ex, args, i))
+        thread.start()
+        processes.append(thread)
+
+    # Get the data from the processes
+    feature_dict = []
+    features = []
+    for p in processes:
+        p_result = p.join()
+        if p_result:
+            feature_dict.append(p_result[0])
+            features.append(p_result[1])
+    '''
+
+    # Single process
+    feature_dict = []
+    features = []
+    for i, ex in enumerate(examples):
+        f_dict, f = encode_fn(ex, args, i)
+        feature_dict.append(f_dict)
+        features.append(f)
+
+    return feature_dict, features
+
 # Generates an answer based on results/A list of SquadResult objects
-def generate_answer_sent(results:SquadResult, features:SquadFeatures, examples:SquadExample, tokenizer:PreTrainedTokenizer) -> str:
+def generate_answer_sent(results:Iterable[SquadResult], features:Iterable[SquadFeatures], examples:SquadExample, tokenizer:PreTrainedTokenizer) -> str:
     '''
     Creates and returns a function to run the Question Answering AI
 
@@ -182,7 +313,7 @@ def generate_answer_sent(results:SquadResult, features:SquadFeatures, examples:S
         all_features=features,
         all_results=results,
         n_best_size=2,
-        max_answer_length=32,
+        max_answer_length=48,
         do_lower_case=True,
         output_prediction_file=False,
         output_nbest_file=False,
