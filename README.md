@@ -47,16 +47,6 @@ This basically does the same, but it assumes that some software hasn't been inst
   ❌Train a bias detection model
   ❌Create bias pipeline
 
-### Todo list of what to do
-* Make sure you've met the requirements from the code style
-* Write tests inside the tests folder
-* Add dependcies to the requirements.txt
-* Add the function into code if not done prior
-* Lastly run the tests you created
-
-We're then checking if the output format and dtypes is correct. And also just checks if it compiles.  
-Maybe add more specialized assertions. But we don't believe it's needed yet.
-
 # Contact
 If you need help, please open an issue or send an email.
 
