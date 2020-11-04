@@ -39,7 +39,7 @@ This basically does the same, but it assumes that some software hasn't been inst
 * Cheaper to run  
   ❌Write GPU sharing software  
 * Improve data-engine  
-  ❌Render websites' JavaScript 
+  ❌Render websites' JavaScript  
   ❌Find the date, author and publisher  
   ❌Add specific websites like snopes.com, factcheck.org  
 * Add a bias-engine  
