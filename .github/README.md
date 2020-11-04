@@ -37,15 +37,15 @@ This basically does the same, but it assumes that some software hasn't been inst
   ❌Get even better GPUs & TPUs  
   ❌Optimize the BERT input pipeline  
 * Cheaper to run  
-  ❌Write GPU sharing software
+  ❌Write GPU sharing software  
 * Improve data-engine  
   ❌Render websites' JavaScript 
-  ❌Find the date, author and publisher    
+  ❌Find the date, author and publisher  
   ❌Add specific websites like snopes.com, factcheck.org  
 * Add a bias-engine  
-  ❌Create bias dataset
-  ❌Train a bias detection model
-  ❌Create bias pipeline
+  ❌Create bias dataset  
+  ❌Train a bias detection model  
+  ❌Create bias pipeline  
 
 # Contact
 If you need help, please open an issue or send an email.
