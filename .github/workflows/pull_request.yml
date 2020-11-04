@@ -1,11 +1,13 @@
 name: Pull request
 
-on: push
+on: 
+  pull_request:
+    types: [ready_for_review, review_requested]
 
 jobs:
-  :
+  run_test:
     name: Check if the data engine works by running test scripts
-    runs-on: ubuntu-latest # Probably switch to Windows or 
+    runs-on: windows-latest # Probably switch to Windows or 
     steps:
       - name: Set up enviroment
         uses: actions/setup-python@v2
