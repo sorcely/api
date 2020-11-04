@@ -80,7 +80,6 @@ class question_answering:
         '''
 
         # Using the transformers own SQuAD preprocessing module
-
         examples = []
         for i, text in enumerate(contexts):
             example = SquadExample(
@@ -263,7 +262,6 @@ def squad_convert_examples_to_features_(examples:Iterable[SquadExample], tokeniz
             return self._return
 
     # Spawns processes
-    '''
     processes = []
     for i, ex in enumerate(examples):
         thread = ThreadWithReturn(
@@ -280,15 +278,6 @@ def squad_convert_examples_to_features_(examples:Iterable[SquadExample], tokeniz
         if p_result:
             feature_dict.append(p_result[0])
             features.append(p_result[1])
-    '''
-
-    # Single process
-    feature_dict = []
-    features = []
-    for i, ex in enumerate(examples):
-        f_dict, f = encode_fn(ex, args, i)
-        feature_dict.append(f_dict)
-        features.append(f)
 
     return feature_dict, features
 

@@ -1,0 +1,23 @@
+name: Pull request
+
+on: 
+  pull_request:
+    types: [ready_for_review, review_requested]
+
+jobs:
+  run_test:
+    name: Check if the data engine works by running test scripts
+    runs-on: windows-latest # Probably switch to Windows or 
+    steps:
+      - name: Set up enviroment
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.7'
+
+      - name: Install dependcies
+        run: pip install -r requirements.txt
+
+      - name: Run all
+        run: |
+          cd tests
+          python test.py

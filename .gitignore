@@ -6,3 +6,4 @@ __pycache__
 tests/*/
 tests/*.txt
 answer_engine/bert-qa-bucket.json
+desktop.ini
