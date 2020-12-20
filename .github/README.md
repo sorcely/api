@@ -47,6 +47,11 @@ This basically does the same, but it assumes that some software hasn't been inst
   ❌Train a bias detection model  
   ❌Create bias pipeline  
 
+# Our lovely community
+## Shoutout to all stargazers and contributors!
+[![Stargazers repo roster for @sorcely/api](https://reporoster.com/stars/sorcely/api)](https://github.com/sorcely/api/stargazers)
+[![Forkers repo roster for @sorcely/api](https://reporoster.com/forks/sorcely/api)](https://github.com/sorcely/api/network/members)
+
 # Contact
 If you need help, please open an issue or send an email.
 
